@@ -1,0 +1,62 @@
+---
+version: '2'
+
+networks:
+  elk:
+    driver: bridge
+
+services:
+  logstash:
+    build:
+      context: ./logstash
+      args:
+        - LOGSTASH_VERSION=${LOGSTASH_VERSION}
+    container_name: local.logstash
+    expose:
+      - "5044"
+    networks:
+      - elk
+
+  elasticsearch:
+    build:
+      context: ./elasticsearch
+      args:
+        - ELASTICSEARCH_VERSION=${ELASTICSEARCH_VERSION}
+    container_name: local.elasticsearch
+    environment:
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - discovery.type=single-node
+    expose:
+      - "9200"
+      - "9300"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elk
+
+  filebeat:
+    build:
+      context: ./filebeat
+      args:
+        - FILEBEAT_VERSION=${FILEBEAT_VERSION}
+    container_name: local.filebeat
+    networks:
+      - elk
+
+  kibana:
+    build:
+      context: ./kibana
+      args:
+        - KIBANA_VERSION=${KIBANA_VERSION}
+    container_name: local.kibana
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://local.elasticsearch:9200"]'
+      KIBANA_USERNAME: ${KIBANA_USERNAME}
+      KIBANA_PASSWORD: ${KIBANA_PASSWORD}
+    networks:
+      - elk

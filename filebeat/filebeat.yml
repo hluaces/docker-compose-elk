@@ -1,0 +1,15 @@
+filebeat.inputs:
+  - type: log
+    paths:
+      - /var/log/sample.log
+  - type: log
+    paths:
+      - /var/log/*.log
+    fields:
+      type: syslog
+
+output.logstash:
+  hosts: ["local.logstash:5044"]
+
+http.enabled: true
+logging.metrics.enabled: false

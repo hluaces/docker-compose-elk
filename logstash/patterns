@@ -1,0 +1,6 @@
+JSON \{(.+)\}
+APACHEURIPARAM [A-Za-z0-9$.+!*'|(){},~@#%&/=:;_?\-\[\]]*
+BACKEND_API_PATH_NEWSTRIGGER /1/newstrigger/
+BACKEND_API_NEWSTRIGGER_HIT %{IPORHOST:clientip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:verb} %{BACKEND_API_PATH_NEWSTRIGGER:path}\?%{APACHEURIPARAM:uriparams}?(?: HTTP/%{NUMBER:httpversion})?)" %{NUMBER:response} (?:%{NUMBER:bytes}|-)
+BACKEND_API %{IPORHOST:[context][request][client][ip]} %{USER} %{USER} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:[context][request][method]} %{NOTSPACE:[context][request][path]}(?: HTTP/%{NUMBER:[context][request][protocol]})?|%{DATA:rawrequest})" %{NUMBER:[context][response][status]:int} (?:%{NUMBER:[context][response][bytes]:int}|-)
+IMAGINARY %{IPORHOST:[context][request][client][ip]} %{USER} %{USER} %{SYSLOG5424SD:timestamp_imaginary} "(?:%{WORD:[context][request][method]} %{NOTSPACE:[context][request][path]}(?: HTTP/%{NUMBER:[context][request][protocol]})?|%{DATA:rawrequest})" %{NUMBER:[context][response][status]:int} (?:%{NUMBER:[context][response][bytes]:int}|-) %{NUMBER:[context][response][duration_ms]:float}
